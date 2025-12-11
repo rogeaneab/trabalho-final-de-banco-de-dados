@@ -1,4 +1,3 @@
--- Criar banco (opcional no NeonDB)
 -- CREATE DATABASE academia;
 -- \c academia;
 
@@ -69,3 +68,4 @@ CREATE TABLE Avaliacao_Fisica (
     Data DATE NOT NULL,
     CPF_Aluno_FK VARCHAR(11) REFERENCES Aluno(CPF)
 );
+
