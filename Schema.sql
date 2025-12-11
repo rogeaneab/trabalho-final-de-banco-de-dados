@@ -1,86 +1,71 @@
-SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS Telefone_Aluno;
-DROP TABLE IF EXISTS Pagamento;
-DROP TABLE IF EXISTS Avaliacao_Fisica;
-DROP TABLE IF EXISTS Aluno_Instrutor;
-DROP TABLE IF EXISTS Instrutor;
-DROP TABLE IF EXISTS Aluno;
-DROP TABLE IF EXISTS Plano;
-SET FOREIGN_KEY_CHECKS = 1;
+-- Criar banco (opcional no NeonDB)
+-- CREATE DATABASE academia;
+-- \c academia;
 
+-- ============================
+-- TABELA PLANO
+-- ============================
 CREATE TABLE Plano (
-  ID_Plano INT NOT NULL AUTO_INCREMENT,
-  Nome VARCHAR(100) NOT NULL,
-  Valor DECIMAL(10,2) NOT NULL,
-  Duracao INT NOT NULL,
-  Beneficios VARCHAR(255),
-  PRIMARY KEY (ID_Plano)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ID_Plano SERIAL PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    Valor NUMERIC(10,2) NOT NULL,
+    Duracao INT NOT NULL,
+    Beneficios TEXT
+);
 
-CREATE TABLE Aluno (
-  CPF CHAR(11) NOT NULL,
-  Nome VARCHAR(100) NOT NULL,
-  Matricula VARCHAR(20) NOT NULL,
-  Data_Nasc DATE,
-  Rua VARCHAR(150),
-  Numero VARCHAR(20),
-  Bairro VARCHAR(80),
-  Cidade VARCHAR(80),
-  ID_Plano_FK INT,
-  PRIMARY KEY (CPF),
-  UNIQUE KEY uq_aluno_matricula (Matricula),
-  CONSTRAINT fk_aluno_plano FOREIGN KEY (ID_Plano_FK)
-    REFERENCES Plano (ID_Plano)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+-- ============================
+-- TABELA INSTRUTOR
+-- ============================
 CREATE TABLE Instrutor (
-  Cod_Registro INT NOT NULL AUTO_INCREMENT,
-  Nome VARCHAR(100) NOT NULL,
-  Salario DECIMAL(10,2),
-  Carga_Horaria INT,
-  PRIMARY KEY (Cod_Registro)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    Cod_Registro SERIAL PRIMARY KEY,
+    Nome VARCHAR(120) NOT NULL,
+    Salario NUMERIC(10,2) NOT NULL,
+    Carga_Horaria INT NOT NULL
+);
 
-CREATE TABLE Aluno_Instrutor (
-  CPF_Aluno_FK CHAR(11) NOT NULL,
-  Cod_Registro_FK INT NOT NULL,
-  Data_Inicio DATE,
-  Data_Fim DATE,
-  PRIMARY KEY (CPF_Aluno_FK, Cod_Registro_FK),
-  CONSTRAINT fk_ai_aluno FOREIGN KEY (CPF_Aluno_FK)
-    REFERENCES Aluno (CPF),
-  CONSTRAINT fk_ai_instrutor FOREIGN KEY (Cod_Registro_FK)
-    REFERENCES Instrutor (Cod_Registro)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- ============================
+-- TABELA ALUNO
+-- ============================
+CREATE TABLE Aluno (
+    CPF VARCHAR(11) PRIMARY KEY,
+    Nome VARCHAR(120) NOT NULL,
+    Matricula VARCHAR(20) UNIQUE NOT NULL,
+    Data_Nasc DATE NOT NULL,
+    Rua VARCHAR(120),
+    Numero INT,
+    Bairro VARCHAR(120),
+    Cidade VARCHAR(120),
+    ID_Plano_FK INT REFERENCES Plano(ID_Plano)
+);
 
+-- ============================
+-- TABELA TELEFONE_ALUNO
+-- ============================
 CREATE TABLE Telefone_Aluno (
-  CPF_Aluno_FK CHAR(11) NOT NULL,
-  Numero_Telefone VARCHAR(20) NOT NULL,
-  Tipo VARCHAR(30),
-  PRIMARY KEY (CPF_Aluno_FK, Numero_Telefone),
-  CONSTRAINT fk_telefone_aluno FOREIGN KEY (CPF_Aluno_FK)
-    REFERENCES Aluno (CPF)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ID_Telefone SERIAL PRIMARY KEY,
+    CPF_Aluno_FK VARCHAR(11) REFERENCES Aluno(CPF),
+    Numero_Telefone VARCHAR(20) NOT NULL
+);
 
+-- ============================
+-- TABELA PAGAMENTO
+-- ============================
 CREATE TABLE Pagamento (
-  ID_Pagamento INT NOT NULL AUTO_INCREMENT,
-  Data_Venc DATE,
-  Data_Quit DATE,
-  Valor DECIMAL(10,2),
-  CPF_Aluno_FK CHAR(11),
-  PRIMARY KEY (ID_Pagamento),
-  CONSTRAINT fk_pagamento_aluno FOREIGN KEY (CPF_Aluno_FK)
-    REFERENCES Aluno (CPF)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ID_Pagamento SERIAL PRIMARY KEY,
+    Data_Venc DATE NOT NULL,
+    Data_Quit DATE,
+    Valor NUMERIC(10,2) NOT NULL,
+    CPF_Aluno_FK VARCHAR(11) REFERENCES Aluno(CPF)
+);
 
+-- ============================
+-- TABELA AVALIACAO_FISICA
+-- ============================
 CREATE TABLE Avaliacao_Fisica (
-  ID_Avaliacao INT NOT NULL AUTO_INCREMENT,
-  Peso DECIMAL(6,2),
-  Altura DECIMAL(4,2),
-  IMC DECIMAL(5,2),
-  Data DATE,
-  CPF_Aluno_FK CHAR(11),
-  PRIMARY KEY (ID_Avaliacao),
-  CONSTRAINT fk_avaliacao_aluno FOREIGN KEY (CPF_Aluno_FK)
-    REFERENCES Aluno (CPF)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ID_Avaliacao SERIAL PRIMARY KEY,
+    Peso NUMERIC(5,2) NOT NULL,
+    Altura NUMERIC(4,2) NOT NULL,
+    IMC NUMERIC(5,2) NOT NULL,
+    Data DATE NOT NULL,
+    CPF_Aluno_FK VARCHAR(11) REFERENCES Aluno(CPF)
+);
